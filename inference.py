@@ -5,8 +5,11 @@ from tasks.tasks import TASKS
 from graders.grader import compute_score
 
 API_BASE_URL = os.getenv("API_BASE_URL")
-API_KEY = os.getenv("API_KEY") or os.getenv("HF_TOKEN")
+API_KEY = os.getenv("API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
+
+if not API_BASE_URL or not API_KEY:
+    raise ValueError("Missing API_BASE_URL or API_KEY")
 
 client = OpenAI(
     base_url=API_BASE_URL,
@@ -15,12 +18,16 @@ client = OpenAI(
 
 def get_action_from_llm(state):
     prompt = f"""
-    You are a loan approval agent.
-    Decide whether to approve or reject loan.
-    State:
-    {state}
-    Answer only one word: approve or reject.
-    """
+You are a loan approval agent.
+
+Decide whether to APPROVE or REJECT the loan based on the user data.
+
+State:
+{state}
+
+Answer strictly in one word:
+approve or reject
+"""
 
     response = client.chat.completions.create(
         model=MODEL_NAME,
@@ -34,7 +41,6 @@ def get_action_from_llm(state):
         action = "reject"
 
     return action
-
 
 def run_task(task):
     env = LoanEnv(task)
@@ -60,7 +66,6 @@ def run_task(task):
     rewards_str = ",".join([f"{r:.2f}" for r in rewards])
 
     print(f"[END] success={str(success).lower()} steps={len(rewards)} score={score:.2f} rewards={rewards_str}")
-
 
 if __name__ == "__main__":
     for t in TASKS:
