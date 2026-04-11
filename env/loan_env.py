@@ -16,9 +16,9 @@ class LoanEnv:
         default = self._simulate_default(self.current_state)
 
         if action == "approve":  #1
-            reward = 1.0 if not default else 0.0
+            reward = 1.0 if not default else -1.0
         elif action == "reject": #0
-            reward = 0.7 if default else 0.3
+            reward = 1.0 if default else -0.5
         else:
             return self.current_state, 0.0, True, {"error": "invalid_action"}
         done = True
@@ -30,7 +30,7 @@ class LoanEnv:
 
         if state["income_stability"] == "stable":
             score += 1
-        if state["credit_history"] == "":
+        if state["credit_history"] == "good":
             score += 1
         if state["employment_type"] == "salaried":
             score += 1
@@ -38,26 +38,13 @@ class LoanEnv:
             score += 1
             
         return score < 2
+
+def _get_task_state(self):
+        return {
+            "income_stability": random.choice(["stable", "unstable"]),
+            "credit_history": random.choice(["good", "bad"]),
+            "employment_type": random.choice(["salaried", "self-employed"]),
+            "loan_amount": random.randint(5000, 200000)
+        }
     
-    def _get_task_state(self):
-        if self.task == "easy":
-            return {
-                "income_stability": "stable",
-                "credit_history": "good",
-                "employment_type": "salaried",
-                "loan_amount": 20000
-            }
-        elif self.task == "medium":
-            return {
-                "income_stability": "stable",
-                "credit_history": "bad",
-                "employment_type": "self-employed",
-                "loan_amount": 70000
-            }
-        else:
-            return {
-                "income_stability": "unstable",
-                "credit_history": "good",
-                "employment_type": "self-employed",
-                "loan_amount": 120000
-            }
+   
