@@ -1,20 +1,28 @@
 [project]
 name = "loan-openenv"
 version = "0.1.0"
-description = "Smart Loan Approval OpenEnv Environment"
-authors = [{ name = "Your Name" }]
-requires-python = ">=3.10"
+description = "Smart Loan Approval RL Environment with LLM Agent"
+authors = [{ name = "Aishwariya Bennuri" }]         
+requires-python = ">=3.10,<3.13"                     
 
 dependencies = [
-  "fastapi",
-  "uvicorn",
-  "openenv-core>=0.2.0",
-  "openai"
+  "fastapi==0.110.0",                                 
+  "uvicorn==0.29.0",
+  "openai>=1.0.0,<2.0.0",                            
+  "pydantic>=2.0.0",                                 
+  "gymnasium==0.29.1",                                
+  "pyyaml>=6.0",                                     
 ]
 
+[project.optional-dependencies]
+dev = ["pytest", "httpx", "black", "ruff"]            
 [project.scripts]
 server = "server.app:main"
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]                       
+where = ["."]
+include = ["env*", "server*", "tasks*", "graders*"]
