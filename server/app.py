@@ -16,7 +16,7 @@ class ActionRequest(BaseModel):
         return v
 
 @app.post("/reset")
-def reset(task: str = "easy"):
+def reset(task:Task= Task.EASY):
     env = LoanEnv(task=task)      
     app.state.env = env            
     return {"state": env.reset()}
