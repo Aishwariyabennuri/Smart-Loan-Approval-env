@@ -1,2 +1,8 @@
-# Smart-Loan-Approval-Env
-An RL environment where an agent decides whether to approve/reject loans
+---
+title: Smart Loan Approval Env
+emoji: 💰
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
