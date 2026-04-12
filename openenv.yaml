@@ -1,40 +1,28 @@
 name: loan-risk-env
-version: "1.0.0"
-description: >
-  A single-step RL environment for loan approval decisions.
-  The agent observes applicant features and decides to approve
-  or reject. Reward reflects the financial risk of the decision.
+version: 0.1.0
+description: Loan approval RL environment
 
 entrypoint: env.loan_env:LoanEnv
 
 tasks:
   - name: easy
-    description: Stable income, good credit, low loan amount
   - name: medium
-    description: Stable income, bad credit, high loan amount
   - name: hard
-    description: Unstable income, self-employed, very high loan amount
 
 action_space:
-  type: discrete
-  values: ["approve", "reject"]
+  type: enum
+  values:
+    - approve
+    - reject
 
 observation_space:
-  type: dict
-  fields:
+  type: object
+  properties:
     income_stability:
       type: string
-      values: ["stable", "unstable"]
     credit_history:
       type: string
-      values: ["good", "bad"]
     employment_type:
       type: string
-      values: ["salaried", "self-employed"]
     loan_amount:
-      type: int
-      min: 5000
-      max: 200000
-
-reward_range: [0.0, 1.0]          
-max_steps_per_episode: 1           
+      type: integer
