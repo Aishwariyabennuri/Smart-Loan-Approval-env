@@ -1,57 +1,84 @@
+import numpy as np
+
 class LoanEnv:
-    def __init__(self, task="easy"):
-        self.task = task
-        self.state = None
+    def __init__(self, data, max_steps=50):
+        self.data = data
+        self.max_steps = max_steps
+        self.reset()
 
     def reset(self):
-        self.state = self._get_task_state()
-        return self.state
+        self.current_step = 0
+        self.balance = 100000
+        self.min_balance = 20000
+        self.active_loans = []
+        self.approvals_by_group = {}
+        self.total_by_group = {}
+        self.current_applicant = self.data[self.current_step]
+        return self._get_state()
+
+    def _get_state(self):
+        return {
+            "applicant": self.current_applicant,
+            "balance": self.balance,
+            "active_loans": len(self.active_loans)
+        }
+
+    def compute_fairness_gap(self, action, applicant):
+        group = applicant.get("group", "A")
+
+        if group not in self.approvals_by_group:
+            self.approvals_by_group[group] = 0
+            self.total_by_group[group] = 0
+
+        self.total_by_group[group] += 1
+        if action == 1:
+            self.approvals_by_group[group] += 1
+
+        rates = []
+        for g in self.total_by_group:
+            if self.total_by_group[g] > 0:
+                rates.append(self.approvals_by_group[g] / self.total_by_group[g])
+
+        if len(rates) < 2:
+            return 0
+
+        return max(rates) - min(rates)
 
     def step(self, action):
-        default = self._simulate_default(self.state)
+        applicant = self.current_applicant
 
-        if action == "approve":
-            reward = 1.0 if not default else 0.0
-        elif action == "reject":
-            reward = 1.0 if default else 0.0
-        else:
-            return self.state, 0.0, True, {"error": "invalid_action"}
+        loan_amount = applicant["loan_amount"]
+        interest = applicant["interest_rate"]
+        default_prob = applicant["default_prob"]
+        repaid = applicant["repaid"]
 
-        return self.state, reward, True, {}
+        reward = 0
 
-    def _simulate_default(self, state):
-        score = 0
+        if action == 1:
+            reward += loan_amount * ((1 - default_prob) * interest - default_prob)
 
-        if state["income_stability"] == "stable":
-            score += 1
-        if state["credit_history"] == "good":
-            score += 1
-        if state["employment_type"] == "salaried":
-            score += 1
-        if state["loan_amount"] < 50000:
-            score += 1
+            self.active_loans.append({
+                "amount": loan_amount,
+                "interest": interest,
+                "repaid": repaid,
+                "time_left": np.random.randint(2, 5)
+            })
 
-        return score < 2
+            self.balance -= loan_amount
 
-    def _get_task_state(self):
-        if self.task == "easy":
-            return {
-                "income_stability": "stable",
-                "credit_history": "good",
-                "employment_type": "salaried",
-                "loan_amount": 20000
-            }
-        elif self.task == "medium":
-            return {
-                "income_stability": "stable",
-                "credit_history": "bad",
-                "employment_type": "self-employed",
-                "loan_amount": 70000
-            }
-        else:
-            return {
-                "income_stability": "unstable",
-                "credit_history": "good",
-                "employment_type": "self-employed",
-                "loan_amount": 120000
-            }
+        new_active_loans = []
+        for loan in self.active_loans:
+            loan["time_left"] -= 1
+
+            if loan["time_left"] == 0:
+                if loan["repaid"]:
+                    reward += loan["amount"] * loan["interest"]
+                    self.balance += loan["amount"]
+                else:
+                    reward -= loan["amount"]
+            else:
+                new_active_loans.append(loan)
+
+        self.active_loans = new_active_loans
+
+        return self._get_state(), reward, done, {}
