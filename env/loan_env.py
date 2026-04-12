@@ -16,13 +16,21 @@ class LoanEnv:
             reward = 1.0 if default else 0.0
         else:
             return self.state, 0.0, True, {"error": "invalid_action"}
+
         return self.state, reward, True, {}
 
     def _simulate_default(self, state):
         score = 0
+
+        if state["income_stability"] == "stable":
+            score += 1
+        if state["credit_history"] == "good":
+            score += 1
+        if state["employment_type"] == "salaried":
             score += 1
         if state["loan_amount"] < 50000:
             score += 1
+
         return score < 2
 
     def _get_task_state(self):
