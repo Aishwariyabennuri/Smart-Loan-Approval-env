@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install fastapi uvicorn openai openenv-core pydantic
+RUN pip install -r requirements.txt
 
-CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["python", "-m", "uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
