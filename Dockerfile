@@ -1,14 +1,12 @@
-FROM python:3.10-slim        # ✅ smaller image (~50% lighter)
+FROM python:3.10-slim      
 
 WORKDIR /app
 
-# ✅ Copy requirements first for Docker layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# ✅ Don't run as root
 RUN useradd -m appuser
 USER appuser
 
