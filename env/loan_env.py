@@ -43,57 +43,57 @@ class LoanEnv:
 
         return score < 3
 
-    def _get_task_state(self):
-        if self.task == "easy_clear_approval":
-            return random.choice([
-                {
-                    "income_stability": "stable",
-                    "credit_history": "good",
-                    "employment_type": "salaried",
-                    "loan_amount": 20000,
-                    "past_defaults": 0
-                },
-                {
-                    "income_stability": "stable",
-                    "credit_history": "good",
-                    "employment_type": "salaried",
-                    "loan_amount": 30000,
-                    "past_defaults": 0
-                }
-            ])
+def _get_task_state(self):
+    if self.task == "easy_low_risk_customer":
+        return random.choice([
+            {
+                "income_stability": "stable",
+                "credit_history": "good",
+                "employment_type": "salaried",
+                "loan_amount": 20000,
+                "past_defaults": 0
+            },
+            {
+                "income_stability": "stable",
+                "credit_history": "good",
+                "employment_type": "salaried",
+                "loan_amount": 30000,
+                "past_defaults": 0
+            }
+        ])
 
-        elif self.task == "medium_mixed_case":
-            return random.choice([
-                {
-                    "income_stability": "stable",
-                    "credit_history": "bad",
-                    "employment_type": "self-employed",
-                    "loan_amount": 70000,
-                    "past_defaults": 1
-                },
-                {
-                    "income_stability": "unstable",
-                    "credit_history": "good",
-                    "employment_type": "self-employed",
-                    "loan_amount": 60000,
-                    "past_defaults": 1
-                }
-            ])
+    elif self.task == "medium_conflicting_signals":
+        return random.choice([
+            {
+                "income_stability": "stable",
+                "credit_history": "bad",
+                "employment_type": "self-employed",
+                "loan_amount": 60000,
+                "past_defaults": 1
+            },
+            {
+                "income_stability": "unstable",
+                "credit_history": "good",
+                "employment_type": "self-employed",
+                "loan_amount": 70000,
+                "past_defaults": 1
+            }
+        ])
 
-        else:
-            return random.choice([
-                {
-                    "income_stability": "unstable",
-                    "credit_history": "bad",
-                    "employment_type": "self-employed",
-                    "loan_amount": 120000,
-                    "past_defaults": 2
-                },
-                {
-                    "income_stability": "unstable",
-                    "credit_history": "good",
-                    "employment_type": "self-employed",
-                    "loan_amount": 100000,
-                    "past_defaults": 3
-                }
-            ])
+    elif self.task == "hard_high_uncertainty":
+        return random.choice([
+            {
+                "income_stability": "unstable",
+                "credit_history": "good",
+                "employment_type": "self-employed",
+                "loan_amount": 120000,
+                "past_defaults": 2
+            },
+            {
+                "income_stability": "unstable",
+                "credit_history": "bad",
+                "employment_type": "self-employed",
+                "loan_amount": 100000,
+                "past_defaults": 3
+            }
+        ])
