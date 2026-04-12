@@ -36,5 +36,5 @@ observation_space:
       min: 5000
       max: 200000
 
-reward_range: [0.0, 1.0]          # ✅ standard RL field
-max_steps_per_episode: 1           # ✅ honest — single step env
+reward_range: [0.0, 1.0]          
+max_steps_per_episode: 1           
